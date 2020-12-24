@@ -1,25 +1,34 @@
-// import logo from './logo.svg';
-// import './App.css';
+import React, { Component } from 'react';
+import { ToastContainer, Slide } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import './App.css';
+import ImageGallery from './components/ImageGallery';
+import SearchBar from './components/Searchbar';
 
-// function App() {
-//   return (
-//     <div className="App">
-//       <header className="App-header">
-//         <img src={logo} className="App-logo" alt="logo" />
-//         <p>
-//           Edit <code>src/App.js</code> and save to reload.
-//         </p>
-//         <a
-//           className="App-link"
-//           href="https://reactjs.org"
-//           target="_blank"
-//           rel="noopener noreferrer"
-//         >
-//           Learn React
-//         </a>
-//       </header>
-//     </div>
-//   );
-// }
+class App extends Component {
+  state = {
+    searchQuery: '',
+  };
 
-// export default App;
+  setQuery = newQquery => {
+    this.setState({ searchQuery: newQquery });
+  };
+
+  render() {
+    const { searchQuery } = this.state;
+    const { setQuery } = this;
+    return (
+      <div className="App">
+        <ToastContainer
+          position="top-center"
+          autoClose={2500}
+          transition={Slide}
+        />
+        <SearchBar onSubmit={setQuery} />
+        <ImageGallery searchQuery={searchQuery} />
+      </div>
+    );
+  }
+}
+
+export default App;
