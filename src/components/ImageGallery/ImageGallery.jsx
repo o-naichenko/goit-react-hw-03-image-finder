@@ -4,10 +4,11 @@ import Loader from 'react-loader-spinner';
 import 'react-loader-spinner/dist/loader/css/react-spinner-loader.css';
 
 import s from './ImageGallery.module.css';
-
 import ApiService from '../../API-services/';
+
 import Button from '../Button';
-import ImageGalleryItem from '../ImageGalleryItem/';
+import ImageGalleryItem from '../ImageGalleryItem';
+import Modal from '../Modal';
 
 const apiService = new ApiService();
 
@@ -15,13 +16,28 @@ export default class ImageGallery extends Component {
   state = {
     images: [],
     status: 'idle',
-    queryPage: 1,
+    // queryPage: 1,
     error: null,
+    showModal: false,
   };
   static propTypes = {
     searchQuery: PropTypes.string.isRequired,
   };
+  componentDidUpdate(prevProps, prevState) {
+    const { searchQuery } = this.props;
 
+    if (searchQuery !== prevProps.searchQuery) {
+      apiService.resetQueryPage();
+      this.setState({ images: [] });
+      this.fetchImages();
+    }
+    if (apiService.queryPage > 1) {
+      window.scrollTo({
+        top: document.documentElement.scrollHeight,
+        behavior: 'smooth',
+      });
+    }
+  }
   fetchImages() {
     const { searchQuery } = this.props;
 
@@ -41,32 +57,25 @@ export default class ImageGallery extends Component {
       })
       .catch(error => this.setState({ status: 'rejected', error }));
   }
-
-  componentDidUpdate(prevProps, prevState) {
-    const { searchQuery } = this.props;
-    const { queryPage } = this.state;
-
-    if (searchQuery !== prevProps.searchQuery) {
-      apiService.resetQueryPage();
-      this.setState({ images: [], queryPage: 1 });
-      this.fetchImages();
-    }
-    if (queryPage !== prevState.queryPage) {
-      this.fetchImages();
-    }
-    if (queryPage > 1) {
-      window.scrollTo({
-        top: document.documentElement.scrollHeight,
-        behavior: 'smooth',
-      });
-    }
-  }
   loadMoreBtnHandler = () => {
     apiService.incrementQueryPage();
-    this.setState(prevState => ({ queryPage: prevState.queryPage + 1 }));
+    this.fetchImages();
+  };
+
+  onImageClick = evt => {
+    const { images } = this.state;
+    if (evt.target.nodeName === 'IMG') {
+      this.toggleModal();
+      this.setState({
+        largeImage: images.find(image => image.webformatURL === evt.target.src),
+      });
+    }
+  };
+  toggleModal = () => {
+    this.setState(prevState => ({ showModal: !prevState.showModal }));
   };
   render() {
-    const { images, status, error } = this.state;
+    const { images, largeImage, status, error } = this.state;
     if (status === 'idle') {
       return null;
     }
@@ -87,7 +96,7 @@ export default class ImageGallery extends Component {
     if (status === 'resolved') {
       return (
         <>
-          <ul className={s.ImageGallery}>
+          <ul className={s.ImageGallery} onClick={this.onImageClick}>
             {images.map(image => (
               <ImageGalleryItem image={image} key={image.webformatURL} />
             ))}
@@ -96,5 +105,6 @@ export default class ImageGallery extends Component {
         </>
       );
     }
+    <Modal image={largeImage} />;
   }
 }
