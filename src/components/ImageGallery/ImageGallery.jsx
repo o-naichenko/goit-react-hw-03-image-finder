@@ -16,7 +16,6 @@ export default class ImageGallery extends Component {
   state = {
     images: [],
     status: 'idle',
-    // queryPage: 1,
     error: null,
     showModal: false,
   };
@@ -75,7 +74,7 @@ export default class ImageGallery extends Component {
     this.setState(prevState => ({ showModal: !prevState.showModal }));
   };
   render() {
-    const { images, largeImage, status, error } = this.state;
+    const { images, largeImage, status, error, showModal } = this.state;
     if (status === 'idle') {
       return null;
     }
@@ -101,10 +100,14 @@ export default class ImageGallery extends Component {
               <ImageGalleryItem image={image} key={image.webformatURL} />
             ))}
           </ul>
-          <Button onClick={this.loadMoreBtnHandler} />
+          {images.length % 12 === 0 && (
+            <Button onClick={this.loadMoreBtnHandler} />
+          )}
+          {showModal && (
+            <Modal image={largeImage} closeModal={this.toggleModal} />
+          )}
         </>
       );
     }
-    <Modal image={largeImage} />;
   }
 }
