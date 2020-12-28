@@ -2,9 +2,6 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { toast } from 'react-toastify';
 import s from './SearchBar.module.css';
-import ApiService from '../../API-services';
-
-const apiService = new ApiService();
 export default class SearchBar extends Component {
   state = {
     searchQuery: '',
@@ -20,11 +17,12 @@ export default class SearchBar extends Component {
   onSubmit = evt => {
     const { searchQuery } = this.state;
     const { onSubmit } = this.props;
+
     evt.preventDefault();
+
     if (searchQuery.trim() === '') {
-      return toast.error('Please, input search query ');
+      return toast.error('Please, input search query');
     }
-    apiService.resetQueryPage();
     onSubmit(searchQuery);
   };
   render() {

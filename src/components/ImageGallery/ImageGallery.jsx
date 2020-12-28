@@ -4,6 +4,7 @@ import Loader from 'react-loader-spinner';
 import 'react-loader-spinner/dist/loader/css/react-spinner-loader.css';
 
 import s from './ImageGallery.module.css';
+
 import ApiService from '../../API-services/';
 
 import Button from '../Button';
@@ -56,7 +57,7 @@ export default class ImageGallery extends Component {
       })
       .catch(error => this.setState({ status: 'rejected', error }));
   }
-  loadMoreBtnHandler = () => {
+  onLoadMoreBtnClick = () => {
     apiService.incrementQueryPage();
     this.fetchImages();
   };
@@ -101,7 +102,7 @@ export default class ImageGallery extends Component {
             ))}
           </ul>
           {images.length % 12 === 0 && (
-            <Button onClick={this.loadMoreBtnHandler} />
+            <Button onClick={this.onLoadMoreBtnClick} />
           )}
           {showModal && (
             <Modal image={largeImage} closeModal={this.toggleModal} />

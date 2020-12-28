@@ -8,7 +8,10 @@ const modalRoot = document.querySelector('#modal-root');
 
 export default class Modal extends Component {
   static propTypes = {
-    image: PropTypes.object.isRequired,
+    image: PropTypes.shape({
+      largeImageURL: PropTypes.string.isRequired,
+      tags: PropTypes.string.isRequired,
+    }),
     closeModal: PropTypes.func.isRequired,
   };
   componentDidMount() {
