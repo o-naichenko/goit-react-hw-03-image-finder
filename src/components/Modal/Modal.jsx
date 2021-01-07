@@ -4,13 +4,13 @@ import { createPortal } from 'react-dom';
 
 import s from './Modal.module.css';
 
-const modalRoot = document.querySelector('#modal-root');
+const modalRoot = document.querySelector('#portal-root');
 
 export default class Modal extends Component {
   static propTypes = {
     image: PropTypes.shape({
-      largeImageURL: PropTypes.string.isRequired,
-      tags: PropTypes.string.isRequired,
+      largeImageURL: PropTypes.string,
+      tags: PropTypes.string,
     }),
     closeModal: PropTypes.func.isRequired,
   };

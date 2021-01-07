@@ -1,114 +1,49 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
-import Loader from 'react-loader-spinner';
-import 'react-loader-spinner/dist/loader/css/react-spinner-loader.css';
+import { PureComponent } from 'react';
+import { createPortal } from 'react-dom';
 
 import s from './ImageGallery.module.css';
-
-import ApiService from '../../API-services/';
-
-import Button from '../Button';
 import ImageGalleryItem from '../ImageGalleryItem';
 import Modal from '../Modal';
 
-const apiService = new ApiService();
+const modalRoot = document.querySelector('#portal-root');
 
-export default class ImageGallery extends Component {
-  state = {
-    images: [],
-    status: 'idle',
-    error: null,
-    showModal: false,
-  };
+export default class ImageGallery extends PureComponent {
   static propTypes = {
-    searchQuery: PropTypes.string.isRequired,
-  };
-  componentDidUpdate(prevProps, prevState) {
-    const { searchQuery } = this.props;
-
-    if (searchQuery !== prevProps.searchQuery) {
-      apiService.resetQueryPage();
-      this.setState({ images: [] });
-      this.fetchImages();
-    }
-    if (apiService.queryPage > 1) {
-      window.scrollTo({
-        top: document.documentElement.scrollHeight,
-        behavior: 'smooth',
-      });
-    }
-  }
-  fetchImages() {
-    const { searchQuery } = this.props;
-
-    this.setState({ status: 'pending' });
-
-    apiService
-      .fetchImages(searchQuery)
-      .then(response => response.json())
-      .then(response => {
-        if (response.hits.length === 0) {
-          return Promise.reject(new Error(`No ${searchQuery} images found`));
-        }
-        this.setState(prevState => ({
-          images: [...prevState.images, ...response.hits],
-          status: 'resolved',
-        }));
-      })
-      .catch(error => this.setState({ status: 'rejected', error }));
-  }
-  onLoadMoreBtnClick = () => {
-    apiService.incrementQueryPage();
-    this.fetchImages();
+    images: PropTypes.arrayOf(PropTypes.object).isRequired,
   };
 
-  onImageClick = evt => {
-    const { images } = this.state;
-    if (evt.target.nodeName === 'IMG') {
-      this.toggleModal();
-      this.setState({
-        largeImage: images.find(image => image.webformatURL === evt.target.src),
-      });
-    }
+  state = {
+    largeImage: null,
   };
-  toggleModal = () => {
-    this.setState(prevState => ({ showModal: !prevState.showModal }));
+  onImageClick = largeImage => {
+    this.setState({
+      largeImage: largeImage,
+    });
+  };
+  onCloseModal = () => {
+    this.setState({ largeImage: null });
   };
   render() {
-    const { images, largeImage, status, error, showModal } = this.state;
-    if (status === 'idle') {
-      return null;
-    }
-    if (status === 'pending') {
-      return (
-        <Loader
-          style={{ margin: '0 auto' }}
-          type="ThreeDots"
-          color="#00BFFF"
-          height={40}
-          width={40}
-        />
+    const { images } = this.props;
+    const { largeImage } = this.state;
+    if (largeImage) {
+      return createPortal(
+        <Modal image={largeImage} closeModal={this.onCloseModal} />,
+        modalRoot,
       );
     }
-    if (status === 'rejected') {
-      return <b className={s.noImagesFoundWarn}>{error.message}</b>;
-    }
-    if (status === 'resolved') {
-      return (
-        <>
-          <ul className={s.ImageGallery} onClick={this.onImageClick}>
-            {images.map(image => (
-              <ImageGalleryItem image={image} key={image.webformatURL} />
-            ))}
-          </ul>
-          {images.length % 12 === 0 && (
-            <Button onClick={this.onLoadMoreBtnClick} />
-          )}
-          {showModal && (
-            <Modal image={largeImage} closeModal={this.toggleModal} />
-          )}
-        </>
-      );
-    }
+    return (
+      <ul className={s.ImageGallery}>
+        {images.map(image => (
+          <ImageGalleryItem
+            image={image}
+            key={image.webformatURL}
+            onImageClick={this.onImageClick}
+          />
+        ))}
+      </ul>
+    );
   }
 }
