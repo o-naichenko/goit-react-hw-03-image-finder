@@ -1,7 +1,6 @@
 import React, { PureComponent } from 'react';
-// import { createPortal } from 'react-dom';
-import { ToastContainer, Slide } from 'react-toastify';
 import PropTypes from 'prop-types';
+import { ToastContainer, Slide } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import 'react-loader-spinner/dist/loader/css/react-spinner-loader.css';
 import s from './App.module.css';
@@ -12,8 +11,6 @@ import Loader from 'react-loader-spinner';
 import SearchBar from './components/Searchbar';
 
 const apiService = new ApiService();
-// const loaderRoot = document.querySelector('#portal-root');
-
 class App extends PureComponent {
   static propTypes = {
     searchQuery: PropTypes.string,
