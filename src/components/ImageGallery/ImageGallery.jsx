@@ -28,22 +28,23 @@ export default class ImageGallery extends PureComponent {
   render() {
     const { images } = this.props;
     const { largeImage } = this.state;
-    if (largeImage) {
-      return createPortal(
-        <Modal image={largeImage} closeModal={this.onCloseModal} />,
-        modalRoot,
-      );
-    }
     return (
-      <ul className={s.ImageGallery}>
-        {images.map(image => (
-          <ImageGalleryItem
-            image={image}
-            key={image.webformatURL}
-            onImageClick={this.onImageClick}
-          />
-        ))}
-      </ul>
+      <>
+        {largeImage &&
+          createPortal(
+            <Modal image={largeImage} closeModal={this.onCloseModal} />,
+            modalRoot,
+          )}
+        <ul className={s.ImageGallery}>
+          {images.map(image => (
+            <ImageGalleryItem
+              image={image}
+              key={image.webformatURL}
+              onImageClick={this.onImageClick}
+            />
+          ))}
+        </ul>
+      </>
     );
   }
 }

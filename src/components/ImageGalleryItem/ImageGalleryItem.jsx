@@ -12,20 +12,15 @@ export default class ImageGalleryItem extends PureComponent {
     onImageClick: PropTypes.func.isRequired,
   };
 
-  onClick = () => {
-    const { onImageClick } = this.props;
-    onImageClick(this.props.image);
-  };
-
   render() {
-    const { image } = this.props;
+    const { image, onImageClick } = this.props;
     return (
       <li className={s.ImageGalleryItem}>
         <img
           className={s.image}
           src={image.webformatURL}
           alt={image.tags}
-          onClick={this.onClick}
+          onClick={() => onImageClick(image)}
         />
       </li>
     );

@@ -50,7 +50,7 @@ class App extends PureComponent {
           status: 'resolved',
         }));
       })
-      .catch(error => this.setState({ error, status: 'error' }));
+      .catch(error => this.setState({ error: error.message, status: 'error' }));
   }
 
   onLoadMoreBtnClick = () => {
@@ -63,7 +63,7 @@ class App extends PureComponent {
   };
 
   render() {
-    const { images, searchQuery, status } = this.state;
+    const { error, images, status } = this.state;
     const { onLoadMoreBtnClick, setQuery } = this;
     return (
       <div className={s.App}>
@@ -73,9 +73,7 @@ class App extends PureComponent {
           transition={Slide}
         />
         <SearchBar onSubmit={setQuery} />
-        {status === 'error' && (
-          <b className={s.noImagesFoundWarn}>no {searchQuery} images found</b>
-        )}
+        {status === 'error' && <b className={s.noImagesFoundWarn}>{error}</b>}
         {images.length > 0 && <ImageGallery images={images} />}
         {status === 'pending' && (
           <Loader
